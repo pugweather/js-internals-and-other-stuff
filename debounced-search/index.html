@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debounced Search</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+        }
+
+        .results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .results-dropdown.active {
+            display: block;
+        }
+
+        .result-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .result-item:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search</h1>
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search items..." id="search-input">
+        <div class="results-dropdown" id="results-dropdown"></div>
+    </div>
+
+    <script src="search.js"></script>
+</body>
+</html>

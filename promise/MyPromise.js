@@ -28,11 +28,19 @@ class MyPromise {
     }
 
     then(callback) {
-        if (this.state === "pending") {
-            this.onFulfilledCallbacks.push(callback)
-        } else {
-            queueMicrotask(() => callback(this.value))
-        }
+        return new MyPromise((resolve, reject) => {
+            if (this.state === "pending") {
+                this.onFulfilledCallbacks.push(() => {
+                    let result = callback(this.value)
+                    resolve(result)
+                })
+            } else {
+                queueMicrotask(() => {
+                    let result = callback(this.value)
+                    resolve(result)
+                })
+            }
+        })
     }
 }
 
@@ -42,12 +50,18 @@ const promise = new MyPromise((resolve, reject) => {
     }, 2000)
 })
 
-console.log("s1")
 
-promise.then(val => console.log(val + " 1"))
-promise.then(val => console.log(val + " 2"))
-promise.then(val => console.log(val + " 3"))
+const res = promise
+    .then(val => val + "!")
+    .then(val => val + "!")
+    .then(val => console.log(val))
 
-console.log("s2")
+// console.log("s1")
+
+// promise.then(val => console.log(val + " 1"))
+// promise.then(val => console.log(val + " 2"))
+// promise.then(val => console.log(val + " 3"))
+
+// console.log("s2")
 
 module.exports = MyPromise

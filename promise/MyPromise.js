@@ -27,18 +27,29 @@ class MyPromise {
         }
     }
 
-    then(callback) {
+    then(onFulfilledCallback, onRejectedCallback) {
         return new MyPromise((resolve, reject) => {
             if (this.state === "pending") {
                 this.onFulfilledCallbacks.push(() => {
-                    let result = callback(this.value)
+                    let result = onFulfilledCallback(this.value)
                     resolve(result)
+                })
+                this.onRejectedCallbacks.push(() => {
+                    let result = onRejectedCallback(this.reason)
+                    resolve(result) 
                 })
             } else {
-                queueMicrotask(() => {
-                    let result = callback(this.value)
-                    resolve(result)
-                })
+                if (this.state === "fulfilled") {
+                    queueMicrotask(() => {
+                        let result = onFulfilledCallback(this.value)
+                        resolve(result)
+                    })
+                } else {
+                    queueMicrotask(() => {
+                        let result = onRejectedCallback(this.reason)
+                        resolve(result)
+                    })
+                }
             }
         })
     }
@@ -46,15 +57,23 @@ class MyPromise {
 
 const promise = new MyPromise((resolve, reject) => {
     setTimeout(() => {
-        resolve("yay")
+        reject("error")
     }, 2000)
 })
 
 
 const res = promise
-    .then(val => val + "!")
-    .then(val => val + "!")
-    .then(val => console.log(val))
+    .then(
+        (val) => console.log(val),
+        (err) => console.log(err)
+    )
+console.log(res)
+
+
+// const res = promise
+//     .then(val => val + "!")
+//     .then(val => val + "!")
+//     .then(val => console.log(val))
 
 // console.log("s1")
 

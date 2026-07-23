@@ -30,6 +30,7 @@ class MyPromise {
     }
 
     then(onFulfilledCallback, onRejectedCallback) {
+        // Can rename the resolve and reject params btw
         return new MyPromise((resolve, reject) => {
             if (this.state === "pending") {
                 this.onFulfilledCallbacks.push(() => {
@@ -37,7 +38,11 @@ class MyPromise {
                         // If cb function isn't passed just resolve with the current value or reason of previous promise
                         if (typeof onFulfilledCallback === "function") {
                             let result = onFulfilledCallback(this.value)
-                            resolve(result)
+                            if (typeof result.then === "function") {
+                                result.then(resolve, reject)
+                            } else {
+                                resolve(result)
+                            }
                         } else {
                             resolve(this.value)
                         }
@@ -49,7 +54,11 @@ class MyPromise {
                     try {
                         if (typeof onRejectedCallback === "function") {
                             let result = onRejectedCallback(this.reason)
-                            resolve(result)  
+                            if (typeof result.then === "function") {
+                                result.then(resolve, reject) 
+                            } else {
+                                resolve(result)
+                            }
                         } else {
                             resolve(this.reason)
                         }
@@ -63,7 +72,11 @@ class MyPromise {
                         try {
                             if (typeof onFulfilledCallback === "function") {
                                 let result = onFulfilledCallback(this.value)
-                                resolve(result)
+                                if (typeof result.then === "function") {
+                                    result.then(resolve, reject)
+                                } else {
+                                    resolve(result)
+                                }
                             } else {
                                 resolve(this.value)
                             }
@@ -76,7 +89,12 @@ class MyPromise {
                         try {
                             if (typeof onRejectedCallback === "function") {
                                 let result = onRejectedCallback(this.reason)
-                                resolve(result)
+                                if (typeof result.then === "function") {
+                                    // Inner promise (one inside cb basically "mimics" the outer promise "new MyPromise above")
+                                    result.then(resolve, reject)
+                                } else{
+                                    resolve(result)
+                                }
                             } else {
                                 resolve(this.reason)
                             }

@@ -35,7 +35,6 @@ class MyPromise {
             if (this.state === "pending") {
                 this.onFulfilledCallbacks.push(() => {
                     try {
-                        // If cb function isn't passed just resolve with the current value or reason of previous promise
                         if (typeof onFulfilledCallback === "function") {
                             let result = onFulfilledCallback(this.value)
                             if (typeof result.then === "function") {
@@ -43,6 +42,7 @@ class MyPromise {
                             } else {
                                 resolve(result)
                             }
+                        // If cb function isn't passed just resolve with the current value of previous promise
                         } else {
                             resolve(this.value)
                         }
@@ -59,6 +59,7 @@ class MyPromise {
                             } else {
                                 resolve(result)
                             }
+                        // If cb function isn't passed just reject with the current reason of previous promise
                         } else {
                             resolve(this.reason)
                         }

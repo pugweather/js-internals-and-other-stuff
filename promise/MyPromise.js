@@ -11,6 +11,7 @@ class MyPromise {
             this.state = "fulfilled"
             this.value = data
             queueMicrotask(() => this.onFulfilledCallbacks.forEach(cb => cb(this.value)))
+            console.log(this)
         }
     
         const reject = (data) => {
@@ -18,6 +19,7 @@ class MyPromise {
             this.state = "rejected"
             this.reason = data
             queueMicrotask(() => this.onRejectedCallbacks.forEach(cb => cb(this.reason)))
+            console.log(this)
         }
 
         try {
@@ -31,43 +33,78 @@ class MyPromise {
         return new MyPromise((resolve, reject) => {
             if (this.state === "pending") {
                 this.onFulfilledCallbacks.push(() => {
-                    let result = onFulfilledCallback(this.value)
-                    resolve(result)
+                    try {
+                        // If cb function isn't passed just resolve with the current value or reason of previous promise
+                        if (typeof onFulfilledCallback === "function") {
+                            let result = onFulfilledCallback(this.value)
+                            resolve(result)
+                        } else {
+                            resolve(this.value)
+                        }
+                    } catch(err) {
+                        reject(err)
+                    }
                 })
                 this.onRejectedCallbacks.push(() => {
-                    let result = onRejectedCallback(this.reason)
-                    resolve(result) 
+                    try {
+                        if (typeof onRejectedCallback === "function") {
+                            let result = onRejectedCallback(this.reason)
+                            resolve(result)  
+                        } else {
+                            resolve(this.reason)
+                        }
+                    } catch(err) {
+                        reject(err)
+                    }
                 })
             } else {
                 if (this.state === "fulfilled") {
                     queueMicrotask(() => {
-                        let result = onFulfilledCallback(this.value)
-                        resolve(result)
+                        try {
+                            if (typeof onFulfilledCallback === "function") {
+                                let result = onFulfilledCallback(this.value)
+                                resolve(result)
+                            } else {
+                                resolve(this.value)
+                            }
+                        } catch(err) {  
+                            reject(err)
+                        }
                     })
                 } else {
                     queueMicrotask(() => {
-                        let result = onRejectedCallback(this.reason)
-                        resolve(result)
+                        try {
+                            if (typeof onRejectedCallback === "function") {
+                                let result = onRejectedCallback(this.reason)
+                                resolve(result)
+                            } else {
+                                resolve(this.reason)
+                            }
+                        } catch(err) {
+                            reject(err)
+                        }
                     })
                 }
             }
         })
     }
+
+    // This is basically just syntactic sugar for having two cbs inside a single then
+    catch(onRejectedCallback) {
+        return this.then(null, onRejectedCallback)
+    }
 }
 
 const promise = new MyPromise((resolve, reject) => {
     setTimeout(() => {
-        reject("error")
+        resolve("hi")
     }, 2000)
 })
 
 
 const res = promise
-    .then(
-        (val) => console.log(val),
-        (err) => console.log(err)
-    )
-console.log(res)
+    .then(val => val)
+    .catch(err => console.log(err))
 
 
 // const res = promise

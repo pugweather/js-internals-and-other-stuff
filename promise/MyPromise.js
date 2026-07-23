@@ -111,6 +111,25 @@ class MyPromise {
     catch(onRejectedCallback) {
         return this.then(null, onRejectedCallback)
     }
+
+    finally(callback) {
+        return this.then(
+            val => {
+                let result = callback()
+                if (result && typeof result.then === "function") {
+                    return result.then(() => val, () => val)
+                }
+                return val
+            },
+            err => {
+                let result = callback()
+                if (result && typeof result.then === "function") {
+                    return result.then(() => {throw err}, () => {throw err})
+                }
+                throw err
+            }
+        )
+    }
 }
 
 const promise = new MyPromise((resolve, reject) => {

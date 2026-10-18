@@ -5,6 +5,9 @@ import cookieParser from "cookie-parser"
 import requireAuth from "./middlewares/requireAuth.js"
 import { users } from "./data.js"
 import requirePageAuth from "./middlewares/requirePageAuth.js"
+import db from "./db.js"
+
+// console.log(db.prepare("SELECT * FROM users").all())
 
 const PORT = 3000
 
@@ -24,10 +27,8 @@ app.post("/login", async (req, res) => {
     // TODO: real auth with db. Bcrypt?
     const { username, password } = req.body
 
-    const foundUser = users
-        .find(user => 
-            user.username === username.toLowerCase() && 
-            user.password === password)
+    const foundUser = db.prepare("SELECT id FROM users WHERE username = ? AND password = ?")
+        .get(username.toLowerCase(), password)
 
     if (!foundUser) return res.status(401).json({error: "Invalid name or password"})
 

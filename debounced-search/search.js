@@ -12,15 +12,12 @@ const data = [
 ];
 
 function debounce(fn, delay) {
-
     let timeoutId = null
-    
     return function(...args) {
-        
         if (timeoutId) {
             clearTimeout(timeoutId)
         }
-        timeoutId = setTimeout(() => {
+        timeoutId = setTimeout(function() {
             fn.apply(this, args)
         }, delay)
     }
@@ -28,38 +25,94 @@ function debounce(fn, delay) {
 
 function searchFunction(query) {
 
-    let resultsDropdown = document.getElementById("results-dropdown")
+    const resultsDropdown = document.getElementById("results-dropdown")
     if (!resultsDropdown) return
 
-    resultsDropdown.innerHTML = ''
-    resultsDropdown.classList.add("active")
+    const filteredResults = data.filter(item => 
+        item.name.toLowerCase()
+        .includes(query.toLowerCase())
+    )
 
-    const filteredData = data.filter(item => query && item.name.toLowerCase().includes(query.toLowerCase()))
-
-    if (filteredData.length) {
-        filteredData.forEach(item => {
-            appendResultsItemToDropdown(item.name)
+    if (filteredResults.length) {
+        resultsDropdown.classList.add("active")
+        resultsDropdown.innerHTML = ''
+        filteredResults.forEach(item => {
+            appendListItem(item)
         })
+
     } else {
         resultsDropdown.classList.remove("active")
     }
-
 }
 
-function appendResultsItemToDropdown(text) {
-
-    let resultsDropdown = document.getElementById("results-dropdown")
+function appendListItem(item) {
+    const resultsDropdown = document.getElementById("results-dropdown")
     if (!resultsDropdown) return
 
     let div = document.createElement("div")
     div.className = "result-item"
-    div.textContent = text
+    div.textContent = item.name
+
     resultsDropdown.appendChild(div)
 }
 
-const debouncedSearch = debounce(searchFunction, 1500)
+const debouncedSearch = debounce(searchFunction, 1000)
 
-const searchInput = document.getElementById("search-input")
+let searchInput = document.getElementById("search-input")
 if (searchInput) {
     searchInput.addEventListener("input", (e) => debouncedSearch(e.target.value))
 }
+
+
+// function debounce(fn, delay) {
+
+//     let timeoutId = null
+    
+//     return function(...args) {
+        
+//         if (timeoutId) {
+//             clearTimeout(timeoutId)
+//         }
+//         timeoutId = setTimeout(() => {
+//             fn.apply(this, args)
+//         }, delay)
+//     }
+// }
+
+// function searchFunction(query) {
+
+//     let resultsDropdown = document.getElementById("results-dropdown")
+//     if (!resultsDropdown) return
+
+//     resultsDropdown.innerHTML = ''
+//     resultsDropdown.classList.add("active")
+
+//     const filteredData = data.filter(item => query && item.name.toLowerCase().includes(query.toLowerCase()))
+
+//     if (filteredData.length) {
+//         filteredData.forEach(item => {
+//             appendResultsItemToDropdown(item.name)
+//         })
+//     } else {
+//         resultsDropdown.classList.remove("active")
+//     }
+
+// }
+
+// function appendResultsItemToDropdown(text) {
+
+//     let resultsDropdown = document.getElementById("results-dropdown")
+//     if (!resultsDropdown) return
+
+//     let div = document.createElement("div")
+//     div.className = "result-item"
+//     div.textContent = text
+//     resultsDropdown.appendChild(div)
+// }
+
+// const debouncedSearch = debounce(searchFunction, 1500)
+
+// const searchInput = document.getElementById("search-input")
+// if (searchInput) {
+//     searchInput.addEventListener("input", (e) => debouncedSearch(e.target.value))
+// }

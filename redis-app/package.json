@@ -1,0 +1,18 @@
+{
+  "name": "redis-app",
+  "version": "1.0.0",
+  "description": "test full stack app w/ redis",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "redis": "^6.3.0"
+  }
+}

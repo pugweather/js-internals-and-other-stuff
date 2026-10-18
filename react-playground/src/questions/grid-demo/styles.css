@@ -1,0 +1,93 @@
+.grid-demo {
+  max-width: 700px;
+  margin: 40px auto;
+  font-family: sans-serif;
+}
+
+.cell {
+  background: #2563eb;
+  color: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* 1. Make .ex1 a 3-column grid with a gap between cells. */
+.ex1 {
+  /* TODO */
+  display: grid;
+  grid-template-columns: repeat(3, 50px);
+  gap: 10px;
+}
+
+/* 2. Compare: .ex2-fr should give each column an equal fraction
+      of the row width. .ex2-px should use fixed 150px columns.
+      Shrink the window and notice the difference. */
+.ex2-fr {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.ex2-px {
+  display: grid;
+  grid-template-columns: repeat(3, 177px);
+}
+
+/* 3. 3-column grid; .featured spans 2 columns. */
+.ex3 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.featured {
+  background: #dc2626;
+  grid-row: span 3;
+}
+
+/* 4. Columns that auto-wrap: each at least 150px, equal share
+      of leftover space. Resize the browser. */
+.ex4 {
+  /* TODO */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+/* 5. Named layout:
+        header  header
+        sidebar main
+        footer  footer
+      First column 180px, second takes the rest.
+      Remember grid-area on each child. */
+.ex5 {
+  /* TODO */
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  grid-template-rows: repeat(4, 120px);
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "sidebar main"
+    "footer footer";
+  gap: 8px;   
+
+}
+.header  { 
+  /* TODO */ 
+  grid-area: header;
+}
+.sidebar { 
+  grid-area: sidebar;
+}
+.main    { 
+  grid-area: main;
+}
+.footer  { 
+  grid-area: footer;
+ }
+
+/* 6. Center .center-me inside a 200px-tall box with one property. */
+.ex6 {
+  height: 200px;
+  border: 1px dashed #94a3b8;
+  display: grid;
+  place-items: baseline;
+}

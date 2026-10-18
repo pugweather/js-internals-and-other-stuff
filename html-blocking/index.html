@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Blocking Demo</title>
+    <!-- <link rel="stylesheet" href="/main.css"> -->
+    <script src="/main.js" defer></script>
+</head>
+<body>
+    <h1>HTML Blocking Demo</h1>
+    <p>This page demonstrates how CSS and JS files block HTML parsing.</p>
+    
+    <div id="content">
+        <h2 id="header">Content</h2>
+        <p>This content should appear styled after CSS loads.</p>
+        <p id="js-status">JavaScript status: Loading...</p>
+    </div>
+    
+    <div id="footer">
+        <p>Footer content</p>
+    </div>
+</body>
+</html>

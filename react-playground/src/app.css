@@ -1,0 +1,50 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1f2937;
+  background: #f8fafc;
+}
+
+.posts {
+  max-height: 60vh;
+  overflow-y: scroll;
+}
+
+.top-wrapper {
+  display: flex;
+}
+
+.cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  min-height: 85vh;
+  overflow-y: scroll;
+}
+
+.card-item {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  margin: 10px;
+  width: 30%;
+}
+
+.list-wrapper {
+/*  ???? */
+}
+
+.list-item {
+  /* ???? */
+}
+
+.error-text {
+  color: red;
+}

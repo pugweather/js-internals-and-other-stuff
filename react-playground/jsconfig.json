@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "target": "ESNext",
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ESNext"
+        ],
+        "types": [
+            "vite/client"
+        ],
+        "checkJs": false
+    },
+    "include": [
+        "src"
+    ]
+}

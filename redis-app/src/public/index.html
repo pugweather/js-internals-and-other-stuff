@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redis Auth</title>
+  <style>
+
+  </style>
+</head>
+<body>
+
+    <div>
+        <form id="login-form">
+            <div>
+                <label for="username">username</label>
+                <input id="username" type="text" placeholder="Username">
+                <label for="password">password</label>
+                <input id="password" type="text" placeholder="Password">
+                <button>log in</button>
+            </div>
+            <div id="error" style="color: red;"></div>
+        </form>
+    </div>
+
+  <script>
+
+    const form = document.getElementById("login-form")
+    const errorEl = document.getElementById("error")
+
+    if (form) {
+        form.addEventListener("submit", function(e) {
+
+            e.preventDefault()
+
+            const username = document.getElementById("username").value.trim()
+            const password = document.getElementById("password").value.trim()
+            
+            async function login() {
+                try {
+                    const response = await fetch("http://localhost:3000/login", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            username,
+                            password
+                        })
+                    })
+                    const data = await response.json()
+                    if (!response.ok) {
+                        throw new Error(data.error)
+                    }
+                    location.href = "/app/welcome.html"
+                    errorEl.textContent = ''
+                } catch(err) {
+                    console.log(err.message)
+                    errorEl.textContent = err.message
+                }
+            }
+            
+            login()
+        })
+    }
+
+  </script>
+</body>
+</html>

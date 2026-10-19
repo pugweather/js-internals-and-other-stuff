@@ -3,9 +3,9 @@ import redis from "./redis.js"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import requireAuth from "./middlewares/requireAuth.js"
-import { users } from "./data.js"
 import requirePageAuth from "./middlewares/requirePageAuth.js"
 import db from "./db.js"
+import bcrypt from "bcrypt"
 
 // console.log(db.prepare("SELECT * FROM users").all())
 
@@ -27,11 +27,16 @@ app.post("/login", async (req, res) => {
     // TODO: real auth with db. Bcrypt?
     const { username, password } = req.body
 
-    const foundUser = db.prepare("SELECT id FROM users WHERE username = ? AND password = ?")
-        .get(username.toLowerCase(), password)
+    const foundUser = db.prepare("SELECT id, password FROM users WHERE username = ?")
+        .get(username.toLowerCase())
 
-    if (!foundUser) return res.status(401).json({error: "Invalid name or password"})
+    if (!foundUser) return res.status(401).json({error: "Invalid username or password"})
 
+    const ok = await bcrypt.compare(password, foundUser.password)
+    if (!ok) {
+        return res.status(401).json({error: "Invalid username or password"})
+    }
+    
     const sessionId = crypto.randomUUID()
     await redis.set(`sess-${sessionId}`, foundUser.id, {
         EX: 60

@@ -1,4 +1,5 @@
 import Database from "better-sqlite3"
+import bcrypt from "bcrypt"
 
 const db = new Database("app.db")
 
@@ -9,6 +10,6 @@ db.exec(`CREATE TABLE IF NOT EXISTS users (
 )`)
 
 db.prepare("INSERT OR IGNORE INTO users (username, password) VALUES (?, ?)")
-    .run("spider donut", "password-test-1")
+    .run("spider donut", bcrypt.hashSync("pw1", 10))
 
 export default db

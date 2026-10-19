@@ -1,6 +1,5 @@
 
 import redis from "../redis.js"
-import { users } from "../data.js"
 import db from "../db.js"
 
 export default async function requireAuth(req, res, next) {

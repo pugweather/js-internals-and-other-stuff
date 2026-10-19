@@ -1,5 +1,4 @@
 import redis from "../redis.js"
-import { users } from "../data.js"
 import db from "../db.js"
 
 export default async function requirePageAuth(req, res, next) {

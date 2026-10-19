@@ -1,11 +1,14 @@
 import express from "express"
-import redis from "./redis.js"
+// import redis from "./redis.js"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import requireAuth from "./middlewares/requireAuth.js"
 import requirePageAuth from "./middlewares/requirePageAuth.js"
 import db from "./db.js"
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+
+process.loadEnvFile()
 
 // console.log(db.prepare("SELECT * FROM users").all())
 
@@ -36,13 +39,15 @@ app.post("/login", async (req, res) => {
     if (!ok) {
         return res.status(401).json({error: "Invalid username or password"})
     }
-    
-    const sessionId = crypto.randomUUID()
-    await redis.set(`sess-${sessionId}`, foundUser.id, {
-        EX: 60
-    })
-    res.cookie("sessionId", sessionId, {
-        maxage: 60000,
+
+    const token = jwt.sign({ id: foundUser.id }, process.env.JWT_SECRET, { expiresIn: 60 })
+    console.log(token)
+    // const sessionId = crypto.randomUUID()
+    // await redis.set(`sess-${sessionId}`, foundUser.id, {
+    //     EX: 60
+    // })
+    res.cookie("token", token, {
+        maxAge: 60000,
         httpOnly: true
     })
     res.json({ ok: true })
@@ -54,8 +59,8 @@ app.get('/me', requireAuth, (req, res) => {
 })
 
 app.delete('/logout', async (req, res) => {
-    await redis.del('sess-' + req.cookies.sessionId)
-    res.clearCookie("sessionId")
+    // await redis.del('sess-' + req.cookies.sessionId)
+    res.clearCookie("token")
     res.json({ ok: true })
 })
 

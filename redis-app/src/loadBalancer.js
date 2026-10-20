@@ -17,3 +17,5 @@ lb.use((req, res) => {
 lb.listen(PORT, function() {
     console.log("Starting load balancer on port " + PORT)
 })
+
+// TODO: track /health api endpoint for each server -> throw data onto random dashboard on frontend?

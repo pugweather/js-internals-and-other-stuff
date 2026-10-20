@@ -10,10 +10,15 @@ import jwt from "jsonwebtoken"
 
 process.loadEnvFile()
 
-const PORT = 3000
+const stats = { requests: 0, perPath: {} }
 
 const app = express()
 
+app.use((req, res, next) => {
+    stats.requests++
+    stats.perPath[req.path] = (stats.perPath[req.path] || 0) + 1
+    next()
+})
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({ origin: "http://localhost:3000", credentials: true }))
@@ -21,7 +26,7 @@ app.use(express.static("src/public"))
 app.use("/app", requirePageAuth, express.static("src/pages"))
 
 app.get("/health", (req, res) => {
-    res.json({ ok: true })
+    res.json({ data: stats, port: process.env.PORT, uptime: process.uptime()})
 })
 
 app.post("/login", async (req, res) => {
@@ -87,6 +92,6 @@ app.delete('/logout', async (req, res) => {
     res.json({ ok: true })
 })
 
-app.listen(PORT, function() {
-    console.log("server listening on port " + PORT)
+app.listen(process.env.PORT, function() {
+    console.log("server listening on port " + process.env.PORT)
 })

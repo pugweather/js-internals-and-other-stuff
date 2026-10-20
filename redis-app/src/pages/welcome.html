@@ -12,9 +12,38 @@
 
     <div>
       <button id="logout">logout</button>
+      <div id="welcome"></div>
     </div>
 
   <script>
+
+    // requirePageAuth and refresh route do roughly the same thing. 
+    // -- requirePageAuth redirects user based on if they're authenticated
+    // -- /refresh mints a new jwt if the refresh key checks out; triggered by a 401 from this route (/me here)
+
+    async function loadMe() {
+        try {
+            const response = await fetch ("http://localhost:3000/me")
+            if (!response.ok) {
+                const refreshResponse = await fetch("http://localhost:3000/refresh")
+                if (!refreshResponse.ok) {
+                    location.href = "/index.html"
+                    return
+                }
+                return loadMe()
+            }
+            const data = await response.json()
+            console.log(data)
+            const welcome = document.getElementById("welcome")
+            if (welcome) {
+                welcome.textContent = `Welcome, ${data.username}`
+            }
+            
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    loadMe()
 
     if (logout) {
         logout.addEventListener("click", function(e) {

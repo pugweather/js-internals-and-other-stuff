@@ -1,5 +1,5 @@
 import express from "express"
-// import redis from "./redis.js"
+import redis from "./redis.js"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import requireAuth from "./middlewares/requireAuth.js"
@@ -9,8 +9,6 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
 process.loadEnvFile()
-
-// console.log(db.prepare("SELECT * FROM users").all())
 
 const PORT = 3000
 
@@ -46,8 +44,18 @@ app.post("/login", async (req, res) => {
     // await redis.set(`sess-${sessionId}`, foundUser.id, {
     //     EX: 60
     // })
+
+    const refreshToken = crypto.randomUUID()
+    await redis.set(`refresh-${refreshToken}`, foundUser.id, {
+        EX: 180
+    })
+
     res.cookie("token", token, {
-        maxAge: 60000,
+        maxAge: 60000, // 1 min
+        httpOnly: true
+    })
+    res.cookie("refreshToken", refreshToken, {
+        maxAge: 180000, // 3 mins
         httpOnly: true
     })
     res.json({ ok: true })
@@ -56,6 +64,21 @@ app.post("/login", async (req, res) => {
 
 app.get('/me', requireAuth, (req, res) => {
     res.json(req.user)
+})
+
+app.get('/refresh', async (req, res) => {
+    const userId = await redis.get(`refresh-${req.cookies.refreshToken}`)
+    console.log(userId)
+    if (!userId) {
+        return res.status(401).json({ error: "No valid refresh token"})
+    }
+    const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: 60 })
+
+    res.cookie("token", token, {
+        maxAge: 60000,
+        httpOnly: true
+    })
+    res.json({ ok: true })
 })
 
 app.delete('/logout', async (req, res) => {

@@ -21,7 +21,8 @@ app.use((req, res, next) => {
 })
 app.use(express.json())
 app.use(cookieParser())
-app.use(cors({ origin: "http://localhost:3000", credentials: true }))
+// app.use(cors({ origin: "http://localhost:3000", credentials: true })) specify origin 
+app.use(cors())
 app.use(express.static("src/public"))
 app.use("/app", requirePageAuth, express.static("src/pages"))
 

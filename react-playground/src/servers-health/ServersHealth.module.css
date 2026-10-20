@@ -1,0 +1,50 @@
+/* Chalking up some quick styling for desktop for testing purposes. Likely scuffed on mobile :/ */
+
+.page {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+}
+
+.dataRow {
+    margin: 2vh 0;
+
+    &.error {
+        color: red;
+    }
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.rowWrapper {
+    display: flex;
+    align-items: center;
+    margin: 4vh 0;
+}
+
+.partOne {
+    padding-right: 50px;
+    border-right: 1px solid #ccc;
+    min-width: 150px;
+}
+
+.partTwo {
+    padding-left: 20px;
+    padding-right: 50px;
+    border-right: 1px solid #ccc;
+    min-width: 200px;
+}
+
+.partThree {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding-left: 20px;
+    min-width: 450px;
+}

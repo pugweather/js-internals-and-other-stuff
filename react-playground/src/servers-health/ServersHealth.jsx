@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import styles from "./ServersHealth.module.css"
+import ServersRow from "./ServersRow.jsx"
 
 export default function ServersHealth() {
 
@@ -31,10 +32,20 @@ export default function ServersHealth() {
                 setError(err.message)
             }   
         }
-        fetchServersHealth()
+
+        let ticks = 0
+        const fetchIntervalId = setInterval(function() {
+            if (ticks > 100) return clearInterval(fetchIntervalId)
+            ticks++
+            fetchServersHealth()
+        }, 500)
+        
+        return () => {
+            clearInterval(fetchIntervalId)
+        }
     }, [])
 
-    if (isPending) return (
+    if (isPending && data.length === 0) return (
         <div className={styles.page}>
             <div>...loading</div>
         </div>
@@ -46,11 +57,14 @@ export default function ServersHealth() {
         </div>
     )
 
-    const normalizedData = data.map(row => {
+    const normalizedData = data.map((row, idx) => {
         const { status } = row
-        const res = { status }
+        // Always include status & port (need port for key prop. Prob could use another unique idenitifier honestly :p)
+        const res = { 
+            status, 
+            port: row.value?.port || serverPorts[idx] 
+        }
         if (status === "fulfilled") {
-            res.port = row.value.port
             res.uptime = row.value.uptime
             res.requests = row.value.data.requests
             res.path = Object.keys(row.value.data.perPath)[0]
@@ -58,51 +72,21 @@ export default function ServersHealth() {
         return res
     })
 
-    console.log(normalizedData)
-
     return (
         <div className={styles.page}>
             <div className={styles.dataWrapper}>
                 <div className={styles.top}>
                     <div>
                         <div>Server health</div>
-                        <div>4 instances</div>
+                        <div>{normalizedData.length} instances</div>
                     </div>
                     <div>
-                        <div>3 healthy</div>
-                        <div>1 failed</div>
+                        <div>{normalizedData.filter(x => x.status === "fulfilled").length} healthy</div>
+                        <div>{normalizedData.filter(x => x.status === "rejected").length} failed</div>
                     </div>
                 </div>
                 <div>
-                    {
-                        normalizedData.map((obj, idx) => {      
-                            const { port, path, requests, uptime, status } = obj                  
-                            return (
-                                <div key={crypto.randomUUID()} className={styles.rowWrapper}>
-                                    <div className={styles.partOne}>
-                                        <div className="dot"></div>
-                                        <div>
-                                            <div>Port {port}</div>
-                                            <div>{status === "fulfilled" ? path : "-"}</div>
-                                        </div>
-                                    </div>
-                                    <div className={styles.partTwo}>
-                                        <div>Requests</div>
-                                        <div>{status === "fulfilled" ? requests : "-"}</div>
-                                    </div>
-                                    <div className={styles.partThree}>
-                                        <div>
-                                            <div>Uptime</div>
-                                            <div>{uptime ? uptime : '-'}</div>
-                                        </div>
-                                        <div style={{marginLeft: "auto", color: status === "fulfilled" ? "green" : "red"}}>
-                                            {status === "fulfilled" ? "Healthy" : "Failed"}
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
+                    {normalizedData.map((obj, idx) => <ServersRow key={obj.port} {...obj} />)}
                 </div>
             </div>
         </div>

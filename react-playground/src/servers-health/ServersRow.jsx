@@ -1,9 +1,13 @@
 import styles from "./ServersHealth.module.css"
 import { useRef, memo } from "react"
+import { useDashboard } from "./ServersHealthContext.jsx"
 
 function ServersRow({ port, path, requests, uptime, status }) {
     
+    const ctx = useDashboard()
+    const { paused, setPaused } = ctx
     const rendersRef = useRef(0)
+    
     rendersRef.current++
 
     console.log(port + " " + rendersRef.current)
@@ -36,7 +40,10 @@ function ServersRow({ port, path, requests, uptime, status }) {
                     {status === "fulfilled" ? "Healthy" : "Failed"}
                 </div>
             </div>
-            <div>Renders: {rendersRef.current}</div>
+            <div>
+                <div>Renders: {rendersRef.current}</div>
+                <div>Ctx val: {paused ? "paused" : "active"}</div>
+            </div>
         </div>
     )
 }

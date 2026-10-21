@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import styles from "./ServersHealth.module.css"
 import ServersRow from "./ServersRow.jsx"
+import { DashboardContext} from "./ServersHealthContext.jsx"
 
 export default function ServersHealth() {
 
@@ -10,12 +11,14 @@ export default function ServersHealth() {
     const [isPending, setIsPending] = useState(false)
     const [error, setError] = useState('')
     const [data, setData] = useState([])
-
-    console.log(data)
+    // Context state (testing. not really necessary here since consumer (ServersRow.jsx) is only 1 level deep
+    const [paused, setPaused] = useState(false)
 
     useEffect(() => {
         async function fetchServersHealth() {
             try {
+
+                if (paused) return
 
                 setIsPending(true)
 
@@ -73,22 +76,25 @@ export default function ServersHealth() {
     })
 
     return (
-        <div className={styles.page}>
-            <div className={styles.dataWrapper}>
-                <div className={styles.top}>
-                    <div>
-                        <div>Server health</div>
-                        <div>{normalizedData.length} instances</div>
+        <DashboardContext.Provider value={{ paused, setPaused }}>
+            <div className={styles.page}>
+                <div className={styles.dataWrapper}>
+                    <div className={styles.top}>
+                        <div>
+                            <div>Server health</div>
+                            <div>{normalizedData.length} instances</div>
+                        </div>
+                        <div>
+                            <div>{normalizedData.filter(x => x.status === "fulfilled").length} healthy</div>
+                            <div>{normalizedData.filter(x => x.status === "rejected").length} failed</div>
+                        </div>
                     </div>
                     <div>
-                        <div>{normalizedData.filter(x => x.status === "fulfilled").length} healthy</div>
-                        <div>{normalizedData.filter(x => x.status === "rejected").length} failed</div>
+                        {normalizedData.map((obj, idx) => <ServersRow key={obj.port} {...obj} />)}
                     </div>
                 </div>
-                <div>
-                    {normalizedData.map((obj, idx) => <ServersRow key={obj.port} {...obj} />)}
-                </div>
+                <button onClick={() => setPaused(prev => !prev)}>{paused ? "unpause" : "pause"}</button>
             </div>
-        </div>
+        </DashboardContext.Provider>
     )
 }

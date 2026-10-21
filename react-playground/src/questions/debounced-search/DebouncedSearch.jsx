@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import data from "./data.js"
 
 function useDebounce(value, delay) {
@@ -22,9 +22,15 @@ function useDebounce(value, delay) {
 
 export default function DebouncedSearch() {
 
+  const MAX_CACHE_SIZE = 3
+
   const [results, setResults] = useState([])
   const [term, setTerm] = useState('')
   const debouncedTerm = useDebounce(term, 1000)
+
+  const cache = useRef(new Map())
+
+  console.log(cache)
 
   function fakeFetch(query) {
     return new Promise((resolve, reject) => {
@@ -43,8 +49,23 @@ export default function DebouncedSearch() {
 
   useEffect(() => {
     async function fetchData() {
+      const lowercaseQuery = debouncedTerm.toLowerCase()
+      const data = cache.current.get(lowercaseQuery)
+      if (data){
+        console.log("CACHE HIT -> " + lowercaseQuery)
+        setResults(data)
+        return
+      }
       try {
         const data = await fakeFetch(debouncedTerm)
+        if (data.length > 0) {
+          if (cache.current.size >= MAX_CACHE_SIZE) {
+            const oldestQueryKey = cache.current.keys().next().value
+            cache.current.delete(oldestQueryKey)
+          }
+          cache.current.set(lowercaseQuery, data)
+        }
+        console.log("FETCH -> " + lowercaseQuery)
         setResults(data)
       } catch(err) {
         console.error(err)

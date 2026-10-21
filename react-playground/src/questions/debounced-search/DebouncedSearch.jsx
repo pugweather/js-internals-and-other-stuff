@@ -1,44 +1,5 @@
 import { useState, useEffect } from 'react'
-
-const data = [
-  { id: 1, name: 'Apple' },
-  { id: 2, name: 'Banana' },
-  { id: 3, name: 'Cherry' },
-  { id: 4, name: 'Date' },
-  { id: 5, name: 'Elderberry' },
-  { id: 6, name: 'Fig' },
-  { id: 7, name: 'Grape' },
-  { id: 8, name: 'Honeydew' },
-  { id: 9, name: 'Kiwi' },
-  { id: 10, name: 'Lemon' },
-]
-
-// TODO: implement your own useDebounce hook.
-// Signature: const debouncedValue = useDebounce(value, delay)
-// It should return `value` only after `delay` ms have passed
-// without `value` changing again.
-
-function useDebounce(value, delay) {
-
-  const [debouncedQuery, setDebouncedQuery] = useState(value)
-
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      setDebouncedQuery(value)
-    }, delay)
-
-    return () => {
-      clearTimeout(timerId)
-    }
-
-    
-  }, [value])
-  
-  return debouncedQuery
-
-}
-
-
+import data from "./data.js"
 
 function useDebounce(value, delay) {
 
@@ -61,13 +22,36 @@ function useDebounce(value, delay) {
 
 export default function DebouncedSearch() {
 
+  const [results, setResults] = useState([])
   const [term, setTerm] = useState('')
   const debouncedTerm = useDebounce(term, 1000)
 
-  const results = debouncedTerm.length ? 
-    data.filter((item) =>
-      item.name.toLowerCase().includes(debouncedTerm.toLowerCase())
-    ) : []
+  function fakeFetch(query) {
+    return new Promise((resolve, reject) => {
+      
+      setTimeout(() => {
+        const filtered = query.length ? 
+        data.filter((item) =>
+          item.name.toLowerCase().includes(query.toLowerCase())
+        ) : []
+
+        resolve(filtered)
+
+      }, 250)
+    })
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await fakeFetch(debouncedTerm)
+        setResults(data)
+      } catch(err) {
+        console.error(err)
+      }
+    } 
+    fetchData()
+ }, [debouncedTerm])
 
   return (
     <div style={{ maxWidth: 400, margin: '40px auto', fontFamily: 'sans-serif' }}>

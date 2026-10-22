@@ -46,7 +46,7 @@ export default function ServersHealth() {
         return () => {
             clearInterval(fetchIntervalId)
         }
-    }, [])
+    }, [paused])
 
     if (isPending && data.length === 0) return (
         <div className={styles.page}>

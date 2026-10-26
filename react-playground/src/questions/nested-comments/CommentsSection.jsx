@@ -1,4 +1,4 @@
-import { useState, useRref } from "react"
+import { useState, useRef } from "react"
 import data from "./data.js"
 
 const INDENT_SPACING = 25 
@@ -23,29 +23,40 @@ export function CommentsSection() {
 
         function insertNode(nodes, nodeId, text) {
             return nodes.map(currCmt => {
-                currCmt.id === nodeId ?
+                return currCmt.id === nodeId ?
                 {...currCmt, replies: [...currCmt.replies, newComment]}
-                : {...currCmt, replies: currCmt.replies.map(c => insertNode(nodes, c.id, text))}
+                : {...currCmt, replies: insertNode(currCmt.replies, nodeId, text)}
             })
         }
 
-        setComments(prev => {
-            return prev.map(currCmt => 
-                currCmt.id === comment.id ? 
-                insertNode(comments, comment.id, text) : 
-                currCmt.replies.map(c => insertNode(comments, comment.id, text)))
-        })
+        // setComments(prev => {
+        //     return prev.map(currCmt => 
+        //         currCmt.id === comment.id ? 
+        //         insertNode(comments, comment.id, text) : 
+        //         currCmt.replies.map(c => insertNode(comments, comment.id, text)))
+        // })
+
+        setComments(prev => insertNode(prev, comment.id, text))
+    }
+
+    function deleteComment(nodeId) {
+        setComments(prev => deleteNode(prev, nodeId))
+    }
+
+    function deleteNode(nodes, nodeId) {
+        return nodes.filter(n => n.id !== nodeId)
+                .map(n => ({...n, replies: deleteNode(n.replies, nodeId)}))
     }
 
     return (
         <div>
-            {comments.map(cmt => <CommentRow key={cmt.id} depth={0} comment={cmt} onReply={addReply}/>)}
+            {comments.map(cmt => <CommentRow key={cmt.id} depth={0} comment={cmt} onReply={addReply} onDelete={deleteComment} />)}
         </div>
     )
 
 }
 
-function CommentRow({ depth, comment, onReply }) {
+function CommentRow({ depth, comment, onReply, onDelete }) {
 
     const [hidden, setHidden] = useState(false)
     const [showReply, setShowReply] = useState(false)
@@ -62,10 +73,11 @@ function CommentRow({ depth, comment, onReply }) {
                 </div>
                 <div>
                     <button onClick={() => onReply(replyText, comment)}>reply</button>
+                    <button onClick={() => onDelete(comment.id)}>delete</button>
                     <input type="text" value={replyText} onChange={(e) => setReplyText(e.target.value)}/>
                 </div>
             </div>
-            {!hidden && comment.replies ? comment.replies.map(cmt => <CommentRow key={cmt.id} depth={depth + 1} comment={cmt}/>) : []}
+            {!hidden && comment.replies ? comment.replies.map(cmt => <CommentRow key={cmt.id} depth={depth + 1} comment={cmt} onReply={onReply} onDelete={onDelete} />) : []}
         </>
     )
 } 

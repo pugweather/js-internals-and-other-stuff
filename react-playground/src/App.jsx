@@ -3,9 +3,16 @@
 // import ServersHealth from "./servers-health/ServersHealth"
 // import DebouncedSearch from "./questions/debounced-search/DebouncedSearch.jsx"
 // import { CommentsSection } from "./questions/nested-comments/CommentsSection"
-import Form from "./questions/mutli-step/Form"
+// import Form from "./content/mutli-step/Form"
+import Child from "./questions/state-management/Child"
+import { ContextReducer } from "./questions/state-management/ContextReducer"
 
 // Swap the import above to work on a different question.
 export default function App() {
-  return <Form />
+
+  return (
+    <ContextReducer>
+        <Child />
+    </ContextReducer>
+  )
 }

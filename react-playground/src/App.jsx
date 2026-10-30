@@ -4,15 +4,19 @@
 // import DebouncedSearch from "./questions/debounced-search/DebouncedSearch.jsx"
 // import { CommentsSection } from "./questions/nested-comments/CommentsSection"
 // import Form from "./content/mutli-step/Form"
-import Child from "./questions/state-management/Child"
-import { ContextReducer } from "./questions/state-management/ContextReducer"
+// import Child from "./questions/state-management/Child"
+// import { ContextReducer } from "./questions/state-management/ContextReducer"
+import BasicGrid from "./questions/basic-grid/BasicGrid"
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
-    <ContextReducer>
-        <Child />
-    </ContextReducer>
+    <div className="page">
+      <BasicGrid />
+    </div>
+    // <ContextReducer>
+    //     <Child />
+    // </ContextReducer>
   )
 }

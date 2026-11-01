@@ -6,14 +6,15 @@
 // import Form from "./content/mutli-step/Form"
 // import Child from "./questions/state-management/Child"
 // import { ContextReducer } from "./questions/state-management/ContextReducer"
-import BasicGrid from "./questions/basic-grid/BasicGrid"
+// import BasicGrid from "./questions/basic-grid/BasicGrid"
+import Wordle from "./wordle/Wordle"
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
     <div className="page">
-      <BasicGrid />
+      <Wordle />
     </div>
     // <ContextReducer>
     //     <Child />

@@ -108,7 +108,6 @@ export default function Wordle() {
     return (
         <div className="wrapper">
             <div>
-                {answer}
                 {status !== "playing" && <span>you {status}! answer: {answer}</span>}
                 <button onClick={resetGame}>reset</button>
             </div>

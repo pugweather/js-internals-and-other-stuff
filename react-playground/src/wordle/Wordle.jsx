@@ -18,51 +18,71 @@ export default function Wordle() {
     const [status, setStatus] = useState("playing")
 
     const [grid, setGrid] = useState(() => Array.from({ length: 5 }, () => Array(5).fill("")))
+    const [statusGrid, setStatusGrid] = useState(() => Array.from({ length: 5 }, () => Array(5).fill(null)))
     const [keys, setKeys] = useState({})
     
     const [position, setPosition] = useState([0, 0]) // [row, col] by index
     const [currRow, currCol] = position
 
+    function resetGame() {
+        const randomlyChosenIdx = Math.floor(Math.random() * POSSIBLE_WORDS.length)
+        setAnswer(POSSIBLE_WORDS[randomlyChosenIdx])
+        setStatus("playing")
+        setGrid(() => Array.from({ length: 5 }, () => Array(5).fill("")))
+        setStatusGrid(() => Array.from({ length: 5 }, () => Array(5).fill(null)))
+        setPosition([0,0])
+        setKeys({})
+    }
     
     function handleKeyPress(key) {
 
         if (status !== "playing") return
         
         if (key === "enter") {
-
-            const won = Object.values(keys)
-                .filter(status => status === "correct")
-                .length === 5
-
-            if (won) {
-                setStatus("won")
-                return
-            }
             
             if (currCol === MAX_COL_IDX + 1) {
-                if (currRow === MAX_ROW_IDX) {
-                    
-                } else {
-                    setPosition(prev => [currRow + 1, 0])
-                }
+
 
                 // Set keys
                 const answerArr = answer.split('')
+                const statusRow = []
+                const rowKeys = {}
                 for (let i = 0; i < grid[currRow].length; i++) {
                     const char = grid[currRow][i]
                     const status = answerArr.includes(char) ? (char === answerArr[i] ? "correct" : "incorrect") : "miss"
-                    const ranks = { miss: 0, incorrect: 1, correct: 2}
-                    // correct | incorrect | miss
-                    setKeys(prev => {
-                        const existing = prev[char]
-                        const rankIsHigher = ranks[status] > ranks[prev[char]]
-                        // Only update if key not in map OR if rank is lower than existing rank
-                        if (!existing || rankIsHigher) {
-                            return { ...prev, [char]: status}
-                        }
-                        return prev
-                    })
+                    const ranks = { miss: 0, incorrect: 1, correct: 2 }
+                    
+                    const currTopRank = Math.max(ranks[keys[char]] ?? -1, ranks[rowKeys[char]] ?? -1)
+                    const rankIsHigher = ranks[status] > currTopRank
+                    // Only update if key not in map OR if rank is lower than existing rank
+                    if (rankIsHigher) {
+                        rowKeys[char] = status
+                    }
+                    statusRow[i] = status
                 }
+                console.log(rowKeys)
+
+                // correct | incorrect | miss
+                setKeys(prev => {
+                    return {...prev, ...rowKeys}
+                })
+                
+                setStatusGrid(prev => prev.map((row, ridx) => ridx === currRow ? statusRow : [...row]))
+
+                
+                if (currRow === MAX_ROW_IDX) {
+                    setStatus("lost")
+                    return
+                } else {
+                    setPosition(prev => [currRow + 1, 0])
+                }
+                
+                const won = grid[currRow].join('').toLowerCase() === answer.toLowerCase()
+                if (won) {
+                    setStatus("won")
+                    return
+                }
+
             }
 
         } else if (key === "<-") {
@@ -90,13 +110,15 @@ export default function Wordle() {
             <div>
                 {answer}
                 {status !== "playing" && <span>you {status}! answer: {answer}</span>}
-                <button>reset</button>
+                <button onClick={resetGame}>reset</button>
             </div>
             <div className={styles.grid}>
                 {
                     grid.map((row, rowIdx) => 
-                        row.map((col, colIdx) => 
-                            <div key={colIdx} className={`${styles.cell} ${currRow === rowIdx && Math.min(currCol, MAX_COL_IDX) === colIdx ? styles.green : ''}`}>{col}</div>
+                        row.map((cell, colIdx) => 
+                            {   const [currRow] = position
+                                return <div key={colIdx} className={`${styles.cell} ${styles[statusGrid[rowIdx][colIdx]] && rowIdx !== currRow ? styles[statusGrid[rowIdx][colIdx]] : ''} ${currRow === rowIdx && Math.min(currCol, MAX_COL_IDX) === colIdx ? styles.greenBorder : ''}`}>{cell}</div>
+                            }
                         )
                     )
                 }

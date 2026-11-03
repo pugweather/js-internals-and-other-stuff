@@ -21,9 +21,22 @@
     font-size: 28px;
     font-weight: bold;
 
-    &.green {
+    &.greenBorder {
         border-color: rgb(0, 185, 0);
     }
+
+    &.correct {
+        background-color: rgb(53, 107, 53)
+    }
+
+    &.incorrect {
+        background-color: rgba(189, 199, 0, 0.724);
+    }
+
+    &.miss {
+        background-color: #898989;
+    }
+
 }
 
 .keyboard {

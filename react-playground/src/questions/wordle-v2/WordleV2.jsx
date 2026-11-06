@@ -21,7 +21,7 @@ export default function WordleV2() {
     const [answer, setAnswer] = useState('')
     const [guesses, setGuesses] = useState(new Array(NUM_GUESSES).fill(''))
     const [guessIndex, setGuessIndex] = useState(0)
-    const [isPlaying, setIsPlaying] = useState(true)
+    const [gameState, setGameState] = useState("playing")
     const [usedKeys, setUsedKeys] = useState({})
 
     async function fetchWord() {
@@ -40,7 +40,7 @@ export default function WordleV2() {
         if (e.key === "Shift") {
             setGuesses(new Array(6).fill(''))
             setGuessIndex(0)
-            setIsPlaying(true)
+            setGameState("playing")
             setUsedKeys({})
             fetchWord()
             return
@@ -48,11 +48,11 @@ export default function WordleV2() {
 
         // Ignore key presses when not playing
         if (guessIndex >= NUM_GUESSES) {
-            setIsPlaying(false)
+            setGameState("lost")
             return
         }
 
-        if (!isPlaying) return
+        if (gameState !== "playing") return
         
         if (e.key === "Backspace") {
             setGuesses(prev => {
@@ -73,11 +73,11 @@ export default function WordleV2() {
             if (currGuess.length < 5) return
 
             if (currGuess === answer) {
-                setIsPlaying(false)
+                setGameState("won")
             }
             
             if (guessIndex >= NUM_GUESSES) {
-                setIsPlaying(false)
+                setGameState("lost")
                 return
             }
             

@@ -1,0 +1,19 @@
+.board {
+    width: 600px;
+    height: 600px;
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+}
+
+.cell1 {
+    background-color: rgb(196, 253, 196);
+}
+
+.cell2 {
+    background-color: rgb(147, 243, 147);
+}
+
+.snake {
+    background-color: red;
+}

@@ -9,14 +9,15 @@
 // import BasicGrid from "./questions/basic-grid/BasicGrid"
 // import Wordle from "./wordle/Wordle"
 // import WordleV2 from "./questions/wordle-v2/WordleV2.jsx"
-import Matching from "./questions/matching/Matching.jsx"
+// import Matching from "./questions/matching/Matching.jsx"
+import SnakeGame from "./questions/snake/SnakeGame.jsx"
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
     <div className="page">
-      <Matching />
+      <SnakeGame />
     </div>
     // <ContextReducer>
     //     <Child />

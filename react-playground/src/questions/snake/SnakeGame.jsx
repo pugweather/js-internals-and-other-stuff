@@ -28,26 +28,67 @@ export default function SnakeGame() {
         return newSnake
     }
 
-    function handleKeydown(key) {
+    function areVelocitiesEqual(v1, v2) {
+        const [r1, c1] = v1
+        const [r2, c2] = v2
+        return r1 === r2 && c1 === c2
+    }
+
+    function isValidDirectionChange(key) {
+        let valid = true
+        console.log(velocity, DOWN_VELOCITY)
         if (key === "ArrowUp") {
-            setVelocity(UP_VELOCITY)
+            if (areVelocitiesEqual(velocity, DOWN_VELOCITY)) {
+                valid = false
+            }
+        }
+        if (key === "ArrowDown") {
+            if (areVelocitiesEqual(velocity, UP_VELOCITY)) {
+                valid = false
+            }
+        }
+        if (key === "ArrowLeft") {
+            if (areVelocitiesEqual(velocity, RIGHT_VELOCITY)) {
+                valid = false
+            }
+        }
+        if (key === "ArrowRight") {
+            if (areVelocitiesEqual(velocity, LEFT_VELOCITY)) {
+                valid = false
+            }
+        }
+        return valid
+    }
+
+    function handleKeydown(e) {
+        const key = e.key
+        if (key === "ArrowUp") {
+            if (isValidDirectionChange(key)) {
+                setVelocity(UP_VELOCITY)
+            }
         } else if (key === "ArrowDown") {
-            setVelocity(DOWN_VELOCITY)
+            if (isValidDirectionChange(key)) {
+                setVelocity(DOWN_VELOCITY)
+            }
         } else if (key === "ArrowLeft") {
-            setVelocity(LEFT_VELOCITY)
+            if (isValidDirectionChange(key)) {
+                setVelocity(LEFT_VELOCITY)
+            }
         } else if (key === "ArrowRight") {
-            setVelocity(RIGHT_VELOCITY)
+            if (isValidDirectionChange(key)) {
+                setVelocity(RIGHT_VELOCITY)
+            }
         }
     }
 
     useEffect(() => {
 
-        document.addEventListener("keydown", (e) => handleKeydown(e.key))
+        document.addEventListener("keydown", handleKeydown)
 
         return () => {
             document.removeEventListener("keydown", handleKeydown)
         }
-    }, [])
+    }, [velocity])
 
     useEffect(() => {
         const gameInterval = setInterval(() => {

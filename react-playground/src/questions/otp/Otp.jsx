@@ -1,41 +1,58 @@
 import { useState, useRef, useEffect } from "react"
 import styles from "./Otp.module.css"
-import { hashKey } from "@tanstack/react-query"
 
 const NUM_INPUTS = 6
 
 export default function Otp() {
-    
-    // TODO: 
 
     const [code, setCode] = useState(['','','','','',''])
     const [focusedIdx, setFocusedIdx] = useState(0)
     const inputRefs = useRef([])
 
+    console.log(code)
+
     useEffect(() => {
-        inputRefs[focusedIdx].focus()
+        inputRefs.current[focusedIdx].focus()
     }, [focusedIdx])
 
     function handleKeydown(e, inputIdx) {
 
-        e.preventDefault()
+        // preventDefault call prevents paste event, so only preventDefault if cmd or ctrl isn't clicked
+        // In other words, we don't want to preventDefault (block paste event) if cmd/ctrl is clicked
+        if (!e.metaKey && !e.ctrlKey) {
+            e.preventDefault()
+        }
 
         const key = e.key
         if (isNumber(key)) {
             setCode(prev => prev.map((val, i) => i === inputIdx ? key : val))
-            setFocusedIdx(prev => prev >= NUM_INPUTS - 1 ? NUM_INPUTS - 1 : prev + 1)
+            setFocusedIdx(prev => focusNextInput(prev))
         } else if (key === "Backspace") {
             setCode(prev => prev.map((val, i) => i === inputIdx ? '' : val))
-            setFocusedIdx(prev => prev <= 0 ? 0 : prev - 1)
+            setFocusedIdx(prev => focusPrevInput(prev))
+        } else if (key === "ArrowRight") {
+            setFocusedIdx(prev => focusNextInput(prev))
+        } else if (key === "ArrowLeft") {
+            setFocusedIdx(prev => focusPrevInput(prev))
+        } 
+
+        function focusNextInput(prev) {
+            return prev >= NUM_INPUTS - 1 ? NUM_INPUTS - 1 : prev + 1
+        }
+
+        function focusPrevInput(prev) {
+            return prev <= 0 ? 0 : prev - 1
         }
     }
+
+
 
     function handleRestart() {
         setFocusedIdx(0)
         setCode(['','','','','',''])
     }
 
-    function handleSubmit() {
+    function handleSubmit(e) {
         e.preventDefault()
         // Would usually make some kind of POST request
         console.log("POST: " + code.join(' '))
@@ -43,6 +60,22 @@ export default function Otp() {
 
     function isNumber(key) {
         return key.charCodeAt(0) >= 48 && key.charCodeAt(0) <= 57
+    }
+
+    function handleClickInput(idx) {
+        setFocusedIdx(idx)
+    }
+
+    function handlePasteCode(e) {
+        const pastedCodeArr = e.clipboardData.getData("text").trim().split('')
+        const pastedCodeIsAllNums = pastedCodeArr.every(char => isNumber(char))
+        if (pastedCodeIsAllNums) {
+            const firstSixNums = pastedCodeArr.slice(0, NUM_INPUTS)
+            setCode(Array.from({ length: NUM_INPUTS }, (_, idx) => firstSixNums[idx] ?? ''))
+            setFocusedIdx(Math.min(firstSixNums.length, NUM_INPUTS - 1))
+        } else {
+            alert("Pasted code must only contain numbers")
+        }
     }
 
     return (
@@ -58,7 +91,9 @@ export default function Otp() {
                             pattern="[0-9]" 
                             onKeyDown={(e) => handleKeydown(e, idx)} 
                             value={code[idx]}
-                            ref={el => inputRefs[idx] = el}
+                            onClick={() => handleClickInput(idx)}
+                            ref={el => inputRefs.current[idx] = el}
+                            onPaste={handlePasteCode}
                         />
                     )
                 }

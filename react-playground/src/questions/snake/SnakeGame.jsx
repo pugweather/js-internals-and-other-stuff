@@ -14,6 +14,34 @@ export default function SnakeGame() {
     const [board, setBoard] = useState(new Array(BOARD_HEIGHT).fill(new Array(BOARD_WIDTH).fill(null)))
     const [snake, setSnake] = useState(INITIAL_SNAKE)
     const [velocity, setVelocity] = useState(UP_VELOCITY)
+    const [isPlaying, setIsPlaying] = useState(true)
+
+    useEffect(() => {
+
+        document.addEventListener("keydown", handleKeydown)
+
+        return () => {
+            document.removeEventListener("keydown", handleKeydown)
+        }
+    }, [velocity])
+
+    useEffect(() => {
+
+        const gameInterval = setInterval(() => {
+            if (!isPlaying) return
+            setSnake(prev => setNewSnakePosition(prev))
+        }, 75)
+
+        return () => {
+            clearInterval(gameInterval)
+        }
+    }, [velocity])
+
+    useEffect(() => {
+        if (snakeCollidedWithBorder(snake)) {
+            setIsPlaying(false)
+        }
+    }, [snake])
 
     function setNewSnakePosition(snk) {
 
@@ -21,11 +49,23 @@ export default function SnakeGame() {
 
         const [headR, headC] = snk[0]
         const [velocityR, velocityC] = velocity
-        console.log(velocityR, velocityC)
         const newHead = [headR + velocityR, headC + velocityC]
 
         newSnake.unshift(newHead)
         return newSnake
+    }
+
+    function snakeCollidedWithBorder(snk) {
+        const head = snk[0]
+        const [r, c] = head
+        if (r < 0 || 
+            r >= BOARD_HEIGHT || 
+            c < 0 ||
+            c >= BOARD_WIDTH
+        ) {
+            return true
+        }
+        return false
     }
 
     function areVelocitiesEqual(v1, v2) {
@@ -35,8 +75,9 @@ export default function SnakeGame() {
     }
 
     function isValidDirectionChange(key) {
+
         let valid = true
-        console.log(velocity, DOWN_VELOCITY)
+
         if (key === "ArrowUp") {
             if (areVelocitiesEqual(velocity, DOWN_VELOCITY)) {
                 valid = false
@@ -81,24 +122,11 @@ export default function SnakeGame() {
         }
     }
 
-    useEffect(() => {
-
-        document.addEventListener("keydown", handleKeydown)
-
-        return () => {
-            document.removeEventListener("keydown", handleKeydown)
-        }
-    }, [velocity])
-
-    useEffect(() => {
-        const gameInterval = setInterval(() => {
-            setSnake(prev => setNewSnakePosition(prev))
-        }, 75)
-
-        return () => {
-            clearInterval(gameInterval)
-        }
-    }, [velocity])
+    function restartGame() {
+        setSnake(INITIAL_SNAKE)
+        setVelocity(UP_VELOCITY)
+        setIsPlaying(true)
+    }
 
     return (
         <div className={styles.board}>   
@@ -119,6 +147,12 @@ export default function SnakeGame() {
                     )
                 }))
             }
+            {!isPlaying && (
+                <div className={styles.popupModal}>
+                    <div>YOU LOST</div>
+                    <button onClick={restartGame}>Restart</button>
+                </div>
+            )}
         </div>
     )
 } 
@@ -126,7 +160,6 @@ export default function SnakeGame() {
 function Snake() {
     return (
         <div>
-
         </div>
     )
 }

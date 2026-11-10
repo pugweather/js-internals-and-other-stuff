@@ -4,6 +4,7 @@
     display: grid;
     grid-template-columns: repeat(15, 1fr);
     grid-template-rows: repeat(15, 1fr);
+    position: relative;
 }
 
 .cell1 {
@@ -16,4 +17,19 @@
 
 .snake {
     background-color: red;
+}
+
+.popupModal {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }

@@ -10,14 +10,15 @@
 // import Wordle from "./wordle/Wordle"
 // import WordleV2 from "./questions/wordle-v2/WordleV2.jsx"
 // import Matching from "./questions/matching/Matching.jsx"
-import SnakeGame from "./questions/snake/SnakeGame.jsx"
+// import SnakeGame from "./questions/snake/SnakeGame.jsx"
+import Otp from "./questions/otp/Otp.jsx"
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
     <div className="page">
-      <SnakeGame />
+      <Otp />
     </div>
     // <ContextReducer>
     //     <Child />

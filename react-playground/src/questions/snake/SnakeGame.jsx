@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import styles from "./SnakeGame.module.css"
 
 const BOARD_WIDTH = 15
@@ -13,12 +13,15 @@ export default function SnakeGame() {
 
     const [board, setBoard] = useState(new Array(BOARD_HEIGHT).fill(new Array(BOARD_WIDTH).fill(null)))
     const [snake, setSnake] = useState(INITIAL_SNAKE)
-    const [velocity, setVelocity] = useState(UP_VELOCITY)
     const [isPlaying, setIsPlaying] = useState(true)
     const [score, setScore] = useState(0)
     const [food, setFood] = useState([6, 6])
 
+    const velocityRef = useRef(UP_VELOCITY)
+    const lastMoveRef = useRef(UP_VELOCITY)
+
     const snakeSet = new Set(snake.map(([r, c]) => `${r}-${c}`))
+    
 
     useEffect(() => {
 
@@ -27,26 +30,26 @@ export default function SnakeGame() {
         return () => {
             document.removeEventListener("keydown", handleKeydown)
         }
-    }, [velocity])
+    }, [])
 
     useEffect(() => {
 
         const gameInterval = setInterval(() => {
             if (!isPlaying) return
+            lastMoveRef.current = velocityRef.current
             setSnake(prev => setNewSnakePosition(prev))
-        }, 150)
+        }, 75)
 
         return () => {
             clearInterval(gameInterval)
         }
-    }, [velocity, isPlaying])
+    }, [isPlaying])
 
     useEffect(() => {
         
         if (grabbedFood(snake)) {
             setScore(prev => prev + 1)
             setFood(spawnNewFood())
-            growSnake([...food])
         }
         if (snakeCollidedWithBorder(snake) || collidedWithMyself(snake)) {
             setIsPlaying(false)
@@ -69,14 +72,6 @@ export default function SnakeGame() {
         return headR === foodR && headC === foodC
     }
 
-    function growSnake(newHead) {
-        setSnake(prev => {
-            const newSnake = [...prev]
-            newSnake.unshift(newHead)
-            return newSnake
-        })
-    }
-
     function spawnNewFood(snk) {
         let [foodR, foodC] = food
         let foodAsStr = `${foodR}-${foodC}` 
@@ -93,7 +88,7 @@ export default function SnakeGame() {
         let newSnake = grabbedFood(snk) ? snk : snk.slice(0, -1)
 
         const [headR, headC] = snk[0]
-        const [velocityR, velocityC] = velocity
+        const [velocityR, velocityC] = velocityRef.current
         const newHead = [headR + velocityR, headC + velocityC]
 
         newSnake.unshift(newHead)
@@ -125,22 +120,22 @@ export default function SnakeGame() {
         let valid = true
 
         if (key === "ArrowUp") {
-            if (areVelocitiesEqual(velocity, DOWN_VELOCITY)) {
+            if (areVelocitiesEqual(lastMoveRef.current, DOWN_VELOCITY)) {
                 valid = false
             }
         }
         if (key === "ArrowDown") {
-            if (areVelocitiesEqual(velocity, UP_VELOCITY)) {
+            if (areVelocitiesEqual(lastMoveRef.current, UP_VELOCITY)) {
                 valid = false
             }
         }
         if (key === "ArrowLeft") {
-            if (areVelocitiesEqual(velocity, RIGHT_VELOCITY)) {
+            if (areVelocitiesEqual(lastMoveRef.current, RIGHT_VELOCITY)) {
                 valid = false
             }
         }
         if (key === "ArrowRight") {
-            if (areVelocitiesEqual(velocity, LEFT_VELOCITY)) {
+            if (areVelocitiesEqual(lastMoveRef.current, LEFT_VELOCITY)) {
                 valid = false
             }
         }
@@ -151,27 +146,29 @@ export default function SnakeGame() {
         const key = e.key
         if (key === "ArrowUp") {
             if (isValidDirectionChange(key)) {
-                setVelocity(UP_VELOCITY)
+                velocityRef.current = UP_VELOCITY
             }
         } else if (key === "ArrowDown") {
             if (isValidDirectionChange(key)) {
-                setVelocity(DOWN_VELOCITY)
+                velocityRef.current = DOWN_VELOCITY
             }
         } else if (key === "ArrowLeft") {
             if (isValidDirectionChange(key)) {
-                setVelocity(LEFT_VELOCITY)
+                velocityRef.current = LEFT_VELOCITY
             }
         } else if (key === "ArrowRight") {
             if (isValidDirectionChange(key)) {
-                setVelocity(RIGHT_VELOCITY)
+                velocityRef.current = RIGHT_VELOCITY
             }
         }
     }
 
     function restartGame() {
         setSnake(INITIAL_SNAKE)
-        setVelocity(UP_VELOCITY)
         setIsPlaying(true)
+        setScore(0)
+        velocityRef.current = UP_VELOCITY
+        lastMoveRef.current = UP_VELOCITY
     }
 
     return (

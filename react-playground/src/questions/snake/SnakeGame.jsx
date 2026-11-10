@@ -15,6 +15,10 @@ export default function SnakeGame() {
     const [snake, setSnake] = useState(INITIAL_SNAKE)
     const [velocity, setVelocity] = useState(UP_VELOCITY)
     const [isPlaying, setIsPlaying] = useState(true)
+    const [score, setScore] = useState(0)
+    const [food, setFood] = useState([6, 6])
+
+    const snakeSet = new Set(snake.map(([r, c]) => `${r}-${c}`))
 
     useEffect(() => {
 
@@ -30,28 +34,70 @@ export default function SnakeGame() {
         const gameInterval = setInterval(() => {
             if (!isPlaying) return
             setSnake(prev => setNewSnakePosition(prev))
-        }, 75)
+        }, 150)
 
         return () => {
             clearInterval(gameInterval)
         }
-    }, [velocity])
+    }, [velocity, isPlaying])
 
     useEffect(() => {
-        if (snakeCollidedWithBorder(snake)) {
+        
+        if (grabbedFood(snake)) {
+            setScore(prev => prev + 1)
+            setFood(spawnNewFood())
+            growSnake([...food])
+        }
+        if (snakeCollidedWithBorder(snake) || collidedWithMyself(snake)) {
             setIsPlaying(false)
         }
     }, [snake])
 
+    function collidedWithMyself(snk) {
+        const [headR, headC] = snk[0]
+        const headAsStr = `${headR}-${headC}`
+        const snakeSetWithoutHead = new Set(snake.slice(1).map(([r, c]) => `${r}-${c}`))
+        if (snakeSetWithoutHead.has(headAsStr)) {
+            return true
+        }
+        return false
+    }
+
+    function grabbedFood(snk) {
+        const [headR, headC] = snk[0]
+        const [foodR, foodC] = food
+        return headR === foodR && headC === foodC
+    }
+
+    function growSnake(newHead) {
+        setSnake(prev => {
+            const newSnake = [...prev]
+            newSnake.unshift(newHead)
+            return newSnake
+        })
+    }
+
+    function spawnNewFood(snk) {
+        let [foodR, foodC] = food
+        let foodAsStr = `${foodR}-${foodC}` 
+        while (snakeSet.has(foodAsStr)) {
+            foodR = Math.floor(Math.random() * BOARD_HEIGHT)
+            foodC = Math.floor(Math.random() * BOARD_WIDTH)
+            foodAsStr = `${foodR}-${foodC}` 
+        }
+        return [foodR, foodC]
+    }
+
     function setNewSnakePosition(snk) {
 
-        const newSnake = snk.slice(0, -1)
+        let newSnake = grabbedFood(snk) ? snk : snk.slice(0, -1)
 
         const [headR, headC] = snk[0]
         const [velocityR, velocityC] = velocity
         const newHead = [headR + velocityR, headC + velocityC]
 
         newSnake.unshift(newHead)
+
         return newSnake
     }
 
@@ -129,37 +175,41 @@ export default function SnakeGame() {
     }
 
     return (
-        <div className={styles.board}>   
-            {
-                board.map((row, rowIdx) => row.map((cell, colIdx) => {
-                    const classForEvenRows = colIdx % 2 === 0 ? "cell1" : "cell2"
-                    const classForOddRows = colIdx % 2 !== 0 ? "cell1" : "cell2"
-                    const checkerClass = rowIdx % 2 === 0 ? classForEvenRows : classForOddRows
+        <div className={styles.wrapper}>
+            <div>Score: {score}</div>
+            <div className={styles.board}>   
+                {
+                    board.map((row, rowIdx) => row.map((cell, colIdx) => {
+                        const classForEvenRows = colIdx % 2 === 0 ? "cell1" : "cell2"
+                        const classForOddRows = colIdx % 2 !== 0 ? "cell1" : "cell2"
+                        const checkerClass = rowIdx % 2 === 0 ? classForEvenRows : classForOddRows
 
-                    const isSnake = snake.some(([r, c]) => r === rowIdx && c === colIdx)
+                        const isSnake = snake.some(([r, c]) => r === rowIdx && c === colIdx)
+                        const isFood = rowIdx === food[0] && colIdx === food[1]
 
-                    const cellClass = isSnake ? "snake" : checkerClass
+                        let cellClass
+                        if (isSnake) {
+                            cellClass = "snake"
+                        } else if (isFood) {
+                            cellClass = "food"
+                        } else {
+                            cellClass = checkerClass
+                        }
 
-                    return (
-                        <div key={`${rowIdx}-${colIdx}`} className={styles[cellClass]}>
+                        return (
+                            <div key={`${rowIdx}-${colIdx}`} className={styles[cellClass]}>
 
-                        </div>
-                    )
-                }))
-            }
-            {!isPlaying && (
-                <div className={styles.popupModal}>
-                    <div>YOU LOST</div>
-                    <button onClick={restartGame}>Restart</button>
-                </div>
-            )}
+                            </div>
+                        )
+                    }))
+                }
+                {!isPlaying && (
+                    <div className={styles.popupModal}>
+                        <div>YOU LOST</div>
+                        <button onClick={restartGame}>Restart</button>
+                    </div>
+                )}
+            </div>
         </div>
     )
 } 
-
-function Snake() {
-    return (
-        <div>
-        </div>
-    )
-}

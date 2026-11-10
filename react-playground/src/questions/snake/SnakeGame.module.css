@@ -33,3 +33,12 @@
     align-items: center;
     flex-direction: column;
 }
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.food {
+    background-color: orange;
+}

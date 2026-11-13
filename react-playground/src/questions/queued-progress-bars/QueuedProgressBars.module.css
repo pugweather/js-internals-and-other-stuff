@@ -1,0 +1,22 @@
+button {
+    margin-inline: 5px;
+}
+
+.buttonsWrapper {
+    position: fixed;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.bar {
+    height: 10px;
+    width: 500px;
+    background-color: #ccc;
+    margin: 10px 0;
+}
+
+.filledBar {
+    height: 100%;
+    background-color: green;
+}

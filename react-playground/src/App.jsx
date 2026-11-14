@@ -13,14 +13,15 @@
 // import SnakeGame from "./questions/snake/SnakeGame.jsx"
 // import Otp from "./questions/otp/Otp.jsx"
 // import ConnectFour from "./questions/connect-four/ConnectFour.jsx"
-import QueuedProgressBars from "./questions/queued-progress-bars/QueuedProgressBars.jsx"
+// import QueuedProgressBars from "./questions/queued-progress-bars/QueuedProgressBars.jsx"
+import Histogram from "./questions/histogram/Histogram.jsx"
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
     <div className="page">
-      <QueuedProgressBars />
+      <Histogram />
     </div>
     // <ContextReducer>
     //     <Child />

@@ -1,0 +1,28 @@
+.wrapper {
+    width: 500px;
+    height: 500px;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    position: relative;
+}
+
+.xLabel {
+    position: absolute;
+    bottom: -20px;
+}
+
+.yLabel {
+    position: absolute;
+    left: -30px;
+}
+
+.bar {
+    position: absolute;
+    border: 1px solid black;
+    background-color: blue;
+    bottom: 0px;
+    /* width: 65px; */
+    color: white;
+    text-align: center;
+    font-size: 24px;
+}

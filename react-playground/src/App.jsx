@@ -14,7 +14,7 @@
 // import Otp from "./questions/otp/Otp.jsx"
 // import ConnectFour from "./questions/connect-four/ConnectFour.jsx"
 // import QueuedProgressBars from "./questions/queued-progress-bars/QueuedProgressBars.jsx"
-import Histogram from "./questions/histogram/Histogram.jsx"
+import Histogram from "./builds/histogram/Histogram.jsx"
 
 // Swap the import above to work on a different question.
 export default function App() {

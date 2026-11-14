@@ -14,14 +14,15 @@
 // import Otp from "./questions/otp/Otp.jsx"
 // import ConnectFour from "./questions/connect-four/ConnectFour.jsx"
 // import QueuedProgressBars from "./questions/queued-progress-bars/QueuedProgressBars.jsx"
-import Histogram from "./builds/histogram/Histogram.jsx"
+// import Histogram from "./builds/histogram/Histogram.jsx"
+import Postings from "./builds/load-postings-scroll/Postings.jsx"
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
     <div className="page">
-      <Histogram />
+      <Postings />
     </div>
     // <ContextReducer>
     //     <Child />

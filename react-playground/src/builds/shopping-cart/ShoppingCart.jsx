@@ -9,6 +9,7 @@ export default function ShoppingCart() {
     const [cart, setCart] = useState({})
 
     const cartProducts = getProductsArrayFromCart()
+    // Best to memoize this in production
     const cartTotal = cartProducts.reduce((acc, p) => acc + (p.price * p.quantity), 0).toFixed(2)
 
     useEffect(() => {

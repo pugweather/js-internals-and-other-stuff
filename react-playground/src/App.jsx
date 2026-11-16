@@ -15,14 +15,16 @@
 // import ConnectFour from "./questions/connect-four/ConnectFour.jsx"
 // import QueuedProgressBars from "./questions/queued-progress-bars/QueuedProgressBars.jsx"
 // import Histogram from "./builds/histogram/Histogram.jsx"
-import Postings from "./builds/load-postings-scroll/Postings.jsx"
+// import Postings from "./builds/load-postings-scroll/Postings.jsx"
+import PostingsV2 from "./builds/load-postings-scroll-v2/PostingsV2.jsx"
+
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
     <div className="page">
-      <Postings />
+      <PostingsV2 />
     </div>
     // <ContextReducer>
     //     <Child />

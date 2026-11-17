@@ -1,5 +1,6 @@
 import { useState, useReducer, useEffect } from "react"
 import styles from "./ShoppingCart.module.css"
+import type { Product, Cart, CartProduct, CartAction } from "./types"
 
 const API_URL = "https://fakestoreapi.com/products"
 
@@ -14,10 +15,10 @@ export default function ShoppingCart() {
     // destructure state and disaptch function, apply dispatch to a node
     // 
 
-    const [products, setProducts] = useState([])
+    const [products, setProducts] = useState<Product[]>([])
     // const [cart, setCart] = useState({})
 
-    const [state, dispatch] = useReducer(reducer, {})
+    const [state, dispatch] = useReducer(reducer, {} as Cart)
 
     const cartProducts = getProductsArrayFromCart()
     // Best to memoize this in production
@@ -30,16 +31,16 @@ export default function ShoppingCart() {
                 if (!response.ok) {
                     throw new Error("Couldn't fetch products")
                 }
-                const data = await response.json()
+                const data: Product[] = await response.json()
                 setProducts(data)
             } catch (err) {
-                console.err("Err: ", err.message)
+                console.error("Err: ", err)
             }
         }
         fetchProducts()
     }, [])
 
-    function reducer(state, action) {
+    function reducer(state: Cart, action: CartAction) {
         switch(action.type) {
             case "INCREMENT": {
                 const newCart = {...state}
@@ -63,12 +64,13 @@ export default function ShoppingCart() {
         }
     }
 
-    function getProductsArrayFromCart() {
+    function getProductsArrayFromCart(): CartProduct[] {
         const prodArray = Object.keys(state).map(id => {
-            const prod = products.find(x => Number(x.id) === Number(id))
+            const prod = products.find(x => Number(x.id) === Number(id)) 
+            if (!prod) return null
             const prodCopy = {...prod, quantity: state[id]}
             return prodCopy
-        })
+        }).filter((p): p is CartProduct => p !== null)
         return prodArray
     }
 

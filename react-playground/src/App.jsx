@@ -17,7 +17,7 @@
 // import Histogram from "./builds/histogram/Histogram.jsx"
 // import Postings from "./builds/load-postings-scroll/Postings.jsx"
 // import PostingsV2 from "./builds/load-postings-scroll-v2/PostingsV2.jsx"
-import ShoppingCart from "./builds/shopping-cart/ShoppingCart.jsx"
+import ShoppingCart from "./builds/shopping-cart/ShoppingCart.js"
 
 
 // Swap the import above to work on a different question.

@@ -1,4 +1,5 @@
-import { useState, useReducer, useEffect } from "react"
+import { useReducer } from "react"
+import useFetch from "../hooks/useFetch"
 import styles from "./ShoppingCart.module.css"
 import type { Product, Cart, CartProduct, CartAction } from "./types"
 
@@ -13,9 +14,9 @@ export default function ShoppingCart() {
         // case {{type}} return new state
         // dont forget to include a default, which can also just throw an error
     // destructure state and disaptch function, apply dispatch to a node
-    // 
 
-    const [products, setProducts] = useState<Product[]>([])
+    const products = useFetch<Product[]>(API_URL).data ?? []
+
     // const [cart, setCart] = useState({})
 
     const [state, dispatch] = useReducer(reducer, {} as Cart)
@@ -23,22 +24,6 @@ export default function ShoppingCart() {
     const cartProducts = getProductsArrayFromCart()
     // Best to memoize this in production
     const cartTotal = cartProducts.reduce((acc, p) => acc + (p.price * p.quantity), 0).toFixed(2)
-
-    useEffect(() => {
-        async function fetchProducts() {
-            try {
-                const response = await fetch(API_URL)
-                if (!response.ok) {
-                    throw new Error("Couldn't fetch products")
-                }
-                const data: Product[] = await response.json()
-                setProducts(data)
-            } catch (err) {
-                console.error("Err: ", err)
-            }
-        }
-        fetchProducts()
-    }, [])
 
     function reducer(state: Cart, action: CartAction) {
         switch(action.type) {

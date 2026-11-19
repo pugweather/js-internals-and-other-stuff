@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "npm --prefix react-playground run dev",
-    "build": "npm --prefix react-playground run build"
+    "build": "npm --prefix react-playground run build",
+    "test": "vitest"
   },
   "dependencies": {
     "experss": "^0.0.1-security",
@@ -11,5 +12,8 @@
     "http-proxy": "^1.18.1",
     "redis": "^6.3.0",
     "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "vitest": "^5.1.1"
   }
 }

@@ -17,15 +17,15 @@
 // import Histogram from "./builds/histogram/Histogram.jsx"
 // import Postings from "./builds/load-postings-scroll/Postings.jsx"
 // import PostingsV2 from "./builds/load-postings-scroll-v2/PostingsV2.jsx"
-import ShoppingCart from "./builds/shopping-cart/ShoppingCart.js"
-
+// import ShoppingCart from "./builds/shopping-cart/ShoppingCart.js"
+import DataTable from "./builds/data-table/DataTable"
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
     <div className="page">
-      <ShoppingCart />
+      <DataTable />
     </div>
     // <ContextReducer>
     //     <Child />

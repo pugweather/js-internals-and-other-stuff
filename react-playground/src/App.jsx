@@ -18,14 +18,17 @@
 // import Postings from "./builds/load-postings-scroll/Postings.jsx"
 // import PostingsV2 from "./builds/load-postings-scroll-v2/PostingsV2.jsx"
 // import ShoppingCart from "./builds/shopping-cart/ShoppingCart.js"
+import { houseColumns, userColumns} from "./builds/data-table/columns.js"
+import { users, houses } from "./builds/data-table/data.js"
 import DataTable from "./builds/data-table/DataTable"
+
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
     <div className="page">
-      <DataTable />
+      <DataTable data={houses} columns={houseColumns} />
     </div>
     // <ContextReducer>
     //     <Child />

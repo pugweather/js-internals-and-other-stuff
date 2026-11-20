@@ -1,20 +1,19 @@
 import { useState } from 'react';
-import users from './users';
 import styles from "./DataTable.module.css"
 
-export default function DataTable() {
+export default function DataTable({ columns, data }) {
 
   const [page, setPage] = useState(0)
   const [shown, setShown] = useState(5)
   const [sortConfig, setSortConfig] = useState({
     key: "id",
     dir: "asc"
-  }) // null | { dir: asc/des, key: id | name | age | occupation }
+  }) // null | { dir: asc/des, key: columnName }
 
-  const pageUsers = getSortedUsers(users)
-  const usersToShow = pageUsers.slice(page * shown, (page * shown) + shown)
+  const pageData = getSortedData(data)
+  const dataToShow = pageData.slice(page * shown, (page * shown) + shown)
 
-  const totalPages = Math.ceil(users.length / shown)
+  const totalPages = Math.ceil(data.length / shown)
 
   function changeShownValue(val) {
     setPage(0)
@@ -31,21 +30,21 @@ export default function DataTable() {
     })
   }
 
-  function getSortedUsers(users) {
+  function getSortedData(data) {
 
-    if (sortConfig === null) return users
+    if (sortConfig === null) return data
 
     const { key, dir } = sortConfig
-    const isNumberCategory = key === "id" || key === "age"
-    const isStringCategory = key === "name" || key === "occupation"
-    if (isNumberCategory) {
-      return dir === "asc" ? users.sort((a, b) => a[key] - b[key]) : users.sort((a, b) => b[key] - a[key])
-    } else if (isStringCategory) {
-      return dir === "asc" ? users.sort((a, b) => a[key].localeCompare(b[key])) : users.sort((a, b) => b[key].localeCompare(a[key]))
+    const isNumberColumn = columns.find(col => col.key === key).type === "number"
+    const isStringColumn = columns.find(col => col.key === key).type === "string"
+    if (isNumberColumn) {
+      return dir === "asc" ? [...data].sort((a, b) => a[key] - b[key]) : [...data].sort((a, b) => b[key] - a[key])
+    } else if (isStringColumn) {
+      return dir === "asc" ? [...data].sort((a, b) => a[key].localeCompare(b[key])) : [...data].sort((a, b) => b[key].localeCompare(a[key]))
     }
 
-    console.error("Invalid key filter - returning default users", key)
-    return users
+    console.error("Invalid key filter - returning default data", key)
+    return data
   }
  
   return (
@@ -53,25 +52,19 @@ export default function DataTable() {
       <table>
         <thead>
           <tr>
-            {[
-              { label: 'ID', key: 'id' },
-              { label: 'Name', key: 'name' },
-              { label: 'Age', key: 'age' },
-              { label: 'Occupation', key: 'occupation' },
-            ].map(({ label, key }) => (
+            {columns.map(({ label, key }) => (
               <th key={key} style={{cursor: "pointer"}} onClick={() => handleClickSortingOption(key)}>{label}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {usersToShow.map(({ id, name, age, occupation }) => (
-            <tr key={id}>
-              <td>{id}</td>
-              <td>{name}</td>
-              <td>{age}</td>
-              <td>{occupation}</td>
-            </tr>
-          ))}
+          {dataToShow.map(item => {
+            return (
+              <tr key={item.id}>
+                {columns.map(col => <td key={col.key}>{item[col.key]}</td>)}
+              </tr>
+            )
+          })}
         </tbody>
       </table>
       <div className={styles.buttonsWrapper}>

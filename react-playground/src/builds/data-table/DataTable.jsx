@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useReducer } from 'react';
 import styles from "./DataTable.module.css"
 
 export default function DataTable({ columns, data }) {
@@ -10,10 +10,30 @@ export default function DataTable({ columns, data }) {
     dir: "asc"
   }) // null | { dir: asc/des, key: columnName }
 
+  const initialInputValsState = initializeColumnInputState(columns)
+  const [state, dispatch] = useReducer(reducer, initialInputValsState)
+
+  console.log(state)
+
   const pageData = getSortedData(data)
   const dataToShow = pageData.slice(page * shown, (page * shown) + shown)
 
   const totalPages = Math.ceil(data.length / shown)
+
+  function reducer(state, action) {
+
+    switch(action.type) {
+
+      case("SET_FIELD"): {
+        return {...state}
+      }
+
+      default: {
+        throw new Error("Invalid action: ", action)
+      }
+
+    }
+  }
 
   function changeShownValue(val) {
     setPage(0)
@@ -46,15 +66,53 @@ export default function DataTable({ columns, data }) {
     console.error("Invalid key filter - returning default data", key)
     return data
   }
+
+  function initializeColumnInputState(cols) {
+    if (!cols) {
+      console.error("cols doesn't exist, " + cols)
+      return null
+    }
+    const inputVals = {}
+    cols.forEach(col => {
+      const isNumberColumn = col.type === "number"
+      const isStringColumn = col.type === "string"
+      if (isNumberColumn) {
+        inputVals[col.key] = { min: "", max: "" }
+      } else if (isStringColumn) {
+        inputVals[col.key] = { value: "" }
+      }
+    })
+    return inputVals
+
+  }
  
   return (
     <div>
       <table>
         <thead>
           <tr>
-            {columns.map(({ label, key }) => (
-              <th key={key} style={{cursor: "pointer"}} onClick={() => handleClickSortingOption(key)}>{label}</th>
-            ))}
+            {columns.map(({ label, key, type }) => {
+
+              const inputsJsxForType = (type) => {
+                if (type === "string") {
+                  return <input type="text" value={state[key].value} onChange={(e) => dispatch({type: "SET_FIELD", key: key, value: e.target.value})}/>
+                } else if (type === "number") {
+                  return (
+                    <div>
+                      <input type="number" value={state[key].min} />
+                      <input type="number" value={state[key].max} />
+                    </div>
+                  )
+                }
+              }
+
+              return (
+                <th key={key} style={{cursor: "pointer"}} onClick={() => handleClickSortingOption(key)}>
+                  <div>{label}</div>
+                  {inputsJsxForType(type)}
+                </th>
+              )
+            })}
           </tr>
         </thead>
         <tbody>

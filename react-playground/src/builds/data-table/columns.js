@@ -13,3 +13,20 @@ export const userColumns = [
     { key: "age", label: "Age", type: "number" },
     { key: "occupation", label: "Occupation", type: "string" },
 ]
+
+/*
+
+
+{
+    id : { // number
+        min: "",
+        max: ""
+    }
+    city: { // strings
+        value: ""
+    },
+
+}
+
+
+*/

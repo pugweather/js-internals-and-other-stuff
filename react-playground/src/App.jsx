@@ -29,14 +29,14 @@ export default function App() {
   return (
     <div className="page">
       <div>
+        <h2>Users</h2>
+        <DataTable data={users} columns={userColumns} />
+      </div>
+      <div>
         <h2>Houses</h2>
         <DataTable data={houses} columns={houseColumns} />
       </div>
       <div style={{marginInline: "20px"}}></div>
-      <div>
-        <h2>Users</h2>
-        <DataTable data={users} columns={userColumns} />
-      </div>
     </div>
     // <ContextReducer>
     //     <Child />

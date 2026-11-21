@@ -1,7 +1,7 @@
 import { useState, useReducer } from 'react';
 import styles from "./DataTable.module.css"
 
-export default function DataTable({ columns, data }) {
+export default function DataTable({ tableId, columns, data }) {
 
   const [page, setPage] = useState(0)
   const [shown, setShown] = useState(5)
@@ -13,19 +13,29 @@ export default function DataTable({ columns, data }) {
   const initialInputValsState = initializeColumnInputState(columns)
   const [state, dispatch] = useReducer(reducer, initialInputValsState)
 
-  console.log(state)
 
   const pageData = getSortedData(data)
-  const dataToShow = pageData.slice(page * shown, (page * shown) + shown)
 
-  const totalPages = Math.ceil(data.length / shown)
+  // TODO: would memoize these for production
+  const filteredData = getFilteredData(pageData)
+  const dataToShow = filteredData.slice(page * shown, (page * shown) + shown)
+
+  const totalPages = Math.max(Math.ceil(filteredData.length / shown), 1)
 
   function reducer(state, action) {
 
     switch(action.type) {
 
       case("SET_FIELD"): {
-        return {...state}
+        if (action.bound) {
+          if (action.bound === "min") {
+            return {...state, [action.key]: {...state[action.key], [action.bound]: action.value}}
+          } else if (action.bound === "max") {
+            return {...state, [action.key]: {...state[action.key], [action.bound]: action.value}}
+          }
+        } else {
+          return {...state, [action.key]: {value: action.value}}
+        }
       }
 
       default: {
@@ -33,6 +43,28 @@ export default function DataTable({ columns, data }) {
       }
 
     }
+  }
+
+  function getFilteredData(data){
+
+    let newData = [...data]
+
+    for (const [column, filters] of Object.entries(state)) {
+      for (const filter in filters) {
+        const filterVal = filters[filter]
+        if (filterVal) { // Ignore empty inputs
+          if (filter === "min") {
+            newData = newData.filter(x => x[column] >= Number(filters[filter].trim()))
+          } else if (filter === "max") {
+            newData = newData.filter(x => x[column] <= Number(filters[filter].trim()))
+          } else if (filter === "value") {
+            newData = newData.filter(x => x[column].toLowerCase().includes(filters[filter].toLowerCase().trim()))
+          }
+        }
+      }
+    }
+
+    return newData
   }
 
   function changeShownValue(val) {
@@ -95,20 +127,20 @@ export default function DataTable({ columns, data }) {
 
               const inputsJsxForType = (type) => {
                 if (type === "string") {
-                  return <input type="text" value={state[key].value} onChange={(e) => dispatch({type: "SET_FIELD", key: key, value: e.target.value})}/>
+                  return <input type="text" value={state[key].value} onChange={(e) => {dispatch({type: "SET_FIELD", key: key, value: e.target.value}); setPage(0)}} placeholder="Search..." />
                 } else if (type === "number") {
                   return (
-                    <div>
-                      <input type="number" value={state[key].min} />
-                      <input type="number" value={state[key].max} />
+                    <div style={{display: "flex", flexDirection: "column"}}>
+                      <input type="number" value={state[key].min} onChange={(e) => {dispatch({type: "SET_FIELD", key: key, value: e.target.value, bound: "min"}); setPage(0)}} placeholder="Min" />
+                      <input type="number" value={state[key].max} onChange={(e) => {dispatch({type: "SET_FIELD", key: key, value: e.target.value, bound: "max"}); setPage(0)}} placeholder="Max" />
                     </div>
                   )
                 }
               }
 
               return (
-                <th key={key} style={{cursor: "pointer"}} onClick={() => handleClickSortingOption(key)}>
-                  <div>{label}</div>
+                <th key={key} style={{cursor: "pointer"}}>
+                  <div onClick={() => handleClickSortingOption(key)}>{label}</div>
                   {inputsJsxForType(type)}
                 </th>
               )

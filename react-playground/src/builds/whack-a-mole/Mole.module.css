@@ -1,0 +1,29 @@
+.board {
+    width: 500px;
+    height: 500px;
+    display: grid;
+    gap: 5px;
+}
+
+.cell {
+    position: relative;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.cellMoleImg {
+    position: absolute;
+    bottom: 0;
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
+
+.cellDirtImg {
+    width: 80%;
+    height: 25%;
+    object-fit: contain;
+}

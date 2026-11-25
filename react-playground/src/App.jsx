@@ -18,9 +18,10 @@
 // import Postings from "./builds/load-postings-scroll/Postings.jsx"
 // import PostingsV2 from "./builds/load-postings-scroll-v2/PostingsV2.jsx"
 // import ShoppingCart from "./builds/shopping-cart/ShoppingCart.js"
-import { houseColumns, userColumns} from "./builds/data-table/columns.js"
-import { users, houses } from "./builds/data-table/data.js"
-import DataTable from "./builds/data-table/DataTable"
+// import { houseColumns, userColumns} from "./builds/data-table/columns.js"
+// import { users, houses } from "./builds/data-table/data.js"
+// import DataTable from "./builds/data-table/DataTable"
+import Mole from "./builds/whack-a-mole/Mole.jsx"
 
 
 // Swap the import above to work on a different question.
@@ -28,15 +29,7 @@ export default function App() {
 
   return (
     <div className="page">
-      <div>
-        <h2>Users</h2>
-        <DataTable data={users} columns={userColumns} />
-      </div>
-      <div>
-        <h2>Houses</h2>
-        <DataTable data={houses} columns={houseColumns} />
-      </div>
-      <div style={{marginInline: "20px"}}></div>
+      <Mole />
     </div>
     // <ContextReducer>
     //     <Child />

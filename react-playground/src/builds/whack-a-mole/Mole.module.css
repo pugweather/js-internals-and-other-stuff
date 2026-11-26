@@ -16,14 +16,44 @@
 
 .cellMoleImg {
     position: absolute;
-    bottom: 0;
+    z-index: 4;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 70%;
     height: 70%;
     object-fit: contain;
+    animation: slideUp 0.3s ease-out;
 }
 
 .cellDirtImg {
+    position: absolute;
+    z-index: 5;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 80%;
     height: 25%;
     object-fit: contain;
+}
+
+.topWrapper {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 5px;
+}
+
+.gameEndWrapper {
+    position: absolute;
+    z-index: 100;
+    inset: 0;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes slideUp {
+    from { transform: translate(-50%, 25%)}
+    to { transform: translate(-50%, 0) }
 }

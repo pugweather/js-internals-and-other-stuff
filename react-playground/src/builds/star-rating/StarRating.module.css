@@ -1,0 +1,17 @@
+.starIcon {
+  --icon-size: 64px;
+
+  cursor: pointer;
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.starIconFilled {
+  fill: yellow;
+}
+
+button {
+    outline: none;
+    border: none;
+    background: none;
+}

@@ -21,14 +21,15 @@
 // import { houseColumns, userColumns} from "./builds/data-table/columns.js"
 // import { users, houses } from "./builds/data-table/data.js"
 // import DataTable from "./builds/data-table/DataTable"
-import Todo from "./builds/todo/Todo.jsx"
+// import Todo from "./builds/todo/Todo.jsx"
+import StarRating from "./builds/star-rating/StarRating.jsx"
 
 // Swap the import above to work on a different question.
 export default function App() {
 
   return (
     <div className="page">
-      <Todo />
+      <StarRating />
     </div>
     // <ContextReducer>
     //     <Child />
